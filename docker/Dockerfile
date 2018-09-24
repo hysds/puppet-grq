@@ -23,7 +23,7 @@ FROM hysds/base:latest
 
 
 MAINTAINER Gerald Manipon (pymonger) "pymonger@gmail.com"
-LABEL description="Base grq Centos7 image for HySDS"
+LABEL description="HySDS GRQ image"
 
 # git url to hysds dev puppet module
 ENV GIT_URL https://github.com/hysds/puppet-grq/raw/docker/install.sh
