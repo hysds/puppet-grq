@@ -78,6 +78,9 @@ class grq inherits hysds_base {
     'httpd': ensure => present;
     'mod_ssl': ensure => present;
     'mod_evasive': ensure => present;
+    'geos-devel': ensure => installed;
+    'proj-devel': ensure => installed;
+    'geos-python': ensure => installed;
   }
 
 
