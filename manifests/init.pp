@@ -81,6 +81,7 @@ class grq inherits hysds_base {
     'geos-devel': ensure => installed;
     'proj-devel': ensure => installed;
     'geos-python': ensure => installed;
+    'numpy': ensure => installed;
   }
 
 
