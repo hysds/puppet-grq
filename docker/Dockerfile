@@ -58,9 +58,13 @@ RUN set -ex \
  && ln -sf /home/ops/sciflo/etc/server.key /home/ops/sciflo/ops/tosca/server.key \
  && ln -sf /home/ops/sciflo/etc/server.pem /home/ops/sciflo/ops/tosca/server.pem
 
+# set default supervisord conf and copy includes
+COPY --chown=ops:ops docker/supervisord.conf /home/ops/sciflo/etc/supervisord.conf
+COPY --chown=ops:ops docker/conf.d /home/ops/sciflo/etc/conf.d
+
 # set entrypoint
 COPY docker/wait-for-it.sh /wait-for-it.sh
 COPY docker/docker-entrypoint.sh /docker-entrypoint.sh
 ENTRYPOINT ["/docker-entrypoint.sh"]
-EXPOSE 80 443 8878 8879 9001
+EXPOSE 22 80 443 8878 8879 9001
 CMD ["supervisord"]
