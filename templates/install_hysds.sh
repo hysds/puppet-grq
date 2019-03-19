@@ -4,7 +4,7 @@ SCIFLO_DIR=<%= @sciflo_dir %>
 
 # create virtualenv if not found
 if [ ! -e "$SCIFLO_DIR/bin/activate" ]; then
-  virtualenv $SCIFLO_DIR --system-site-packages
+  /opt/conda/bin/virtualenv $SCIFLO_DIR --system-site-packages
   echo "Created virtualenv at $SCIFLO_DIR."
 fi
 
@@ -20,7 +20,8 @@ pip install -U setuptools
 
 # force install supervisor
 if [ ! -e "$SCIFLO_DIR/bin/supervisord" ]; then
-  pip install --ignore-installed supervisor
+  #pip install --ignore-installed supervisor
+  pip install --ignore-installed git+https://github.com/Supervisor/supervisor
 fi
 
 
@@ -78,7 +79,7 @@ fi
 cd $OPS
 PACKAGE=prov_es
 if [ ! -d "$OPS/$PACKAGE" ]; then
-  git clone ${GIT_URL}/hysds/${PACKAGE}.git
+  git clone --single-branch -b python3 ${GIT_URL}/hysds/${PACKAGE}.git
 fi
 cd $OPS/$PACKAGE
 pip install -e .
@@ -93,7 +94,7 @@ cd $OPS
 GITHUB_REPO=osaka
 PACKAGE=osaka
 if [ ! -d "$OPS/$PACKAGE" ]; then
-  git clone ${GIT_URL}/hysds/${GITHUB_REPO}.git $PACKAGE
+  git clone --single-branch -b python3 ${GIT_URL}/hysds/${PACKAGE}.git
 fi
 cd $OPS/$PACKAGE
 pip install -U pyasn1
@@ -110,7 +111,7 @@ fi
 cd $OPS
 PACKAGE=hysds_commons
 if [ ! -d "$OPS/$PACKAGE" ]; then
-  git clone ${GIT_URL}/hysds/${PACKAGE}.git
+  git clone --single-branch -b python3 ${GIT_URL}/hysds/${PACKAGE}.git
 fi
 cd $OPS/$PACKAGE
 pip install -e .
@@ -124,13 +125,10 @@ fi
 cd $OPS
 PACKAGE=hysds
 if [ ! -d "$OPS/$PACKAGE" ]; then
-  git clone ${GIT_URL}/hysds/${PACKAGE}.git
+  git clone --single-branch -b python3 ${GIT_URL}/hysds/${PACKAGE}.git
 fi
 pip install -U  greenlet
 pip install -U  pytz
-pip uninstall -y celery
-cd $OPS/$PACKAGE/third_party/celery-v3.1.25.pqueue
-pip install -e .
 cd $OPS/$PACKAGE
 pip install -e .
 if [ "$?" -ne 0 ]; then
@@ -143,7 +141,7 @@ fi
 cd $OPS
 PACKAGE=sciflo
 if [ ! -d "$OPS/$PACKAGE" ]; then
-  git clone ${GIT_URL}/hysds/${PACKAGE}.git
+  git clone --single-branch -b python3 ${GIT_URL}/hysds/${PACKAGE}.git
 fi
 cd $OPS/$PACKAGE
 pip install -e .
@@ -187,7 +185,7 @@ fi
 cd $OPS
 PACKAGE=grq2
 if [ ! -d "$OPS/$PACKAGE" ]; then
-  git clone ${GIT_URL}/hysds/${PACKAGE}.git
+  git clone --single-branch -b python3 ${GIT_URL}/hysds/${PACKAGE}.git
 fi
 cd $OPS/$PACKAGE
 pip install -e .
@@ -201,7 +199,7 @@ fi
 cd $OPS
 PACKAGE=tosca
 if [ ! -d "$OPS/$PACKAGE" ]; then
-  git clone ${GIT_URL}/hysds/${PACKAGE}.git
+  git clone --single-branch -b python3 ${GIT_URL}/hysds/${PACKAGE}.git
 fi
 cd $OPS/$PACKAGE
 pip install -e .
