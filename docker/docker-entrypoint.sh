@@ -37,6 +37,9 @@ fi
 # install ES template
 /home/ops/sciflo/ops/grq2/scripts/install_es_template.sh || :
 
+# create user rules index
+/home/ops/sciflo/ops/tosca/scripts/create_user_rules_index.py || :
+
 if [[ "$#" -eq 1  && "$@" == "supervisord" ]]; then
   set -- supervisord -n
 else
