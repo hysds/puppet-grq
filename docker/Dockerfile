@@ -3,6 +3,9 @@ FROM hysds/dev:latest
 # git url to hysds dev puppet module
 ENV GIT_URL https://github.com/hysds/puppet-grq/raw/docker/install.sh
 
+# get release to install
+ARG RELEASE=develop
+
 # add latest repo version to invalidate cache
 ADD https://api.github.com/repos/hysds/puppet-grq/git/refs/heads/docker version.json
 
@@ -17,7 +20,7 @@ RUN set -ex \
  && sudo rm -f /tmp/install.sh \
  && sudo rm -rf /var/cache/yum \
  && cd $HOME \
- && ./install_hysds.sh \
+ && ./install_hysds.sh ${RELEASE} \
  && rm -rf $HOME/sciflo/ops/*/.git* \
  && rm -rf $HOME/.cache
 
