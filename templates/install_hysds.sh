@@ -18,15 +18,19 @@ release=$1
 
 
 # print out commands and exit on any errors
-set -ex
+set -e
 
 # set oauth token
 OAUTH_CFG="$HOME/.git_oauth_token"
 if [ -e "$OAUTH_CFG" ]; then
   source $OAUTH_CFG
-  GIT_URL="https://${GIT_OAUTH_TOKEN}@github.com"
-else
+fi
+if [ -z "${GIT_OAUTH_TOKEN}" ]; then
   GIT_URL="https://github.com"
+  token=""
+else
+  GIT_URL="https://${GIT_OAUTH_TOKEN}@github.com"
+  token=" -k ${GIT_OAUTH_TOKEN} "
 fi
 
 
@@ -38,9 +42,9 @@ if [ ! -d "$HOME/$PACKAGE" ]; then
 fi
 cd $HOME/$PACKAGE
 if [ "$release" = "develop" ]; then
-  ./install.sh -d grq
+  ./install.sh -d $token grq
 else
-  ./install.sh -r $release grq
+  ./install.sh -r $release $token grq
 fi
 
 
