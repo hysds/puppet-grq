@@ -123,3 +123,7 @@ if [ "$?" -ne 0 ]; then
   echo "Failed to run 'pip install -e .' for $PACKAGE."
   exit 1
 fi
+
+
+# cleanup pkgs
+rm -rf $SCIFLO_DIR/pkgs/*
