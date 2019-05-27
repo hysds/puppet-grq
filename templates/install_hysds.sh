@@ -38,9 +38,9 @@ if [ ! -d "$HOME/$PACKAGE" ]; then
 fi
 cd $HOME/$PACKAGE
 if [ "$release" = "develop" ]; then
-  ./install.sh -d verdi
+  ./install.sh -d grq
 else
-  ./install.sh -r $release verdi
+  ./install.sh -r $release grq
 fi
 
 
