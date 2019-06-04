@@ -37,8 +37,8 @@ fi
 # create user rules index
 /home/ops/sciflo/ops/tosca/scripts/create_user_rules_index.py || :
 
-# install ES template
-/home/ops/sciflo/ops/grq2/scripts/install_es_template.sh || :
+# install ES templates for HySDS package indexes
+/home/ops/sciflo/ops/hysds_commons/scripts/install_es_template.sh grq || :
 
 if [[ "$#" -eq 1  && "$@" == "supervisord" ]]; then
   set -- supervisord -n
