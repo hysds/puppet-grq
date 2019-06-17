@@ -464,6 +464,11 @@ class grq inherits scientific_python {
         protocol => "tcp",
       },
       {
+        # Pele REST Service
+        port     => "8877",
+        protocol => "tcp",
+      },
+      {
         # GRQ (GeoRegionQuery) REST Service
         port     => "8878",
         protocol => "tcp",
