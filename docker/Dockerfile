@@ -57,10 +57,13 @@ RUN set -ex \
  && ln -sf /home/ops/sciflo/etc/celeryconfig.py /home/ops/sciflo/ops/hysds/celeryconfig.py \
  && ln -sf /home/ops/sciflo/etc/grq2_settings.cfg /home/ops/sciflo/ops/grq2/settings.cfg \
  && ln -sf /home/ops/sciflo/etc/tosca_settings.cfg /home/ops/sciflo/ops/tosca/settings.cfg \
+ && ln -sf /home/ops/sciflo/etc/pele_settings.cfg /home/ops/sciflo/ops/pele/settings.cfg \
  && ln -sf /home/ops/sciflo/etc/server.key /home/ops/sciflo/ops/grq2/server.key \
  && ln -sf /home/ops/sciflo/etc/server.pem /home/ops/sciflo/ops/grq2/server.pem \
  && ln -sf /home/ops/sciflo/etc/server.key /home/ops/sciflo/ops/tosca/server.key \
- && ln -sf /home/ops/sciflo/etc/server.pem /home/ops/sciflo/ops/tosca/server.pem
+ && ln -sf /home/ops/sciflo/etc/server.pem /home/ops/sciflo/ops/tosca/server.pem \
+ && ln -sf /home/ops/sciflo/etc/server.key /home/ops/sciflo/ops/pele/server.key \
+ && ln -sf /home/ops/sciflo/etc/server.pem /home/ops/sciflo/ops/pele/server.pem
 
 # set default supervisord conf and copy includes
 COPY --chown=ops:ops docker/supervisord.conf /home/ops/sciflo/etc/supervisord.conf
