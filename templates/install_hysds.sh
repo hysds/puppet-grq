@@ -129,5 +129,16 @@ if [ "$?" -ne 0 ]; then
 fi
 
 
+# export latest pele package
+cd $OPS
+PACKAGE=pele
+cd $OPS/$PACKAGE
+pip install -e .
+if [ "$?" -ne 0 ]; then
+  echo "Failed to run 'pip install -e .' for $PACKAGE."
+  exit 1
+fi
+
+
 # cleanup pkgs
 rm -rf $SCIFLO_DIR/pkgs/*
