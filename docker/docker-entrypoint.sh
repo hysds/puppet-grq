@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+# set HOME explicitly
+export HOME=/home/ops
+
 # wait for redis and ES
 /wait-for-it.sh -t 30 grq-redis:6379
 /wait-for-it.sh -t 30 grq-elasticsearch:9200
@@ -17,31 +20,34 @@ gosu 0:0 usermod -u $UID -g $GID ops 2>/dev/null
 gosu 0:0 usermod -aG docker ops 2>/dev/null
 
 # update ownership
-gosu 0:0 chown -R $UID:$GID /home/ops 2>/dev/null || true
+gosu 0:0 chown -R $UID:$GID $HOME 2>/dev/null || true
 gosu 0:0 chown -R $UID:$GID /var/run/docker.sock 2>/dev/null || true
 gosu 0:0 chown -R $UID:$GID /var/log/supervisor 2>/dev/null || true
 
+# source bash profile
+source $HOME/.bash_profile
+
 # source grq virtualenv
-if [ -e "/home/ops/sciflo/bin/activate" ]; then
-  source /home/ops/sciflo/bin/activate
+if [ -e "$HOME/sciflo/bin/activate" ]; then
+  source $HOME/sciflo/bin/activate
 fi
 
 # ensure db for tosca exists
-if [ ! -d "/home/ops/sciflo/ops/tosca/data" ]; then
-  mkdir -p /home/ops/sciflo/ops/tosca/data
+if [ ! -d "$HOME/sciflo/ops/tosca/data" ]; then
+  mkdir -p $HOME/sciflo/ops/tosca/data
 fi
-if [ -e `readlink /home/ops/sciflo/ops/tosca/settings.cfg` ]; then
-  /home/ops/sciflo/ops/tosca/db_create.py
+if [ -e `readlink $HOME/sciflo/ops/tosca/settings.cfg` ]; then
+  $HOME/sciflo/ops/tosca/db_create.py
 fi
 
 # create user rules index
-/home/ops/sciflo/ops/tosca/scripts/create_user_rules_index.py || :
+$HOME/sciflo/ops/tosca/scripts/create_user_rules_index.py || :
 
 # install ES template for grq datasets
-/home/ops/sciflo/ops/grq2/scripts/install_es_template.sh || :
+$HOME/sciflo/ops/grq2/scripts/install_es_template.sh || :
 
 # install ES templates for HySDS package indexes
-/home/ops/sciflo/ops/hysds_commons/scripts/install_es_template.sh grq || :
+$HOME/sciflo/ops/hysds_commons/scripts/install_es_template.sh grq || :
 
 if [[ "$#" -eq 1  && "$@" == "supervisord" ]]; then
   set -- supervisord -n
