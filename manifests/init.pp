@@ -232,7 +232,6 @@ class grq inherits scientific_python {
     enable     => true,
     hasrestart => true,
     hasstatus  => true,
-    provider   => init,
     require    => [
                    File['/etc/security/limits.d/99-elasticsearch.conf'],
                    File['/etc/sysconfig/elasticsearch'],
