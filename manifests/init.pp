@@ -106,10 +106,10 @@ class grq inherits scientific_python {
   # install oracle java and set default
   #####################################################
 
-  $jdk_rpm_file = "jdk-8u60-linux-x64.rpm"
+  $jdk_rpm_file = "jdk-8u241-linux-x64.rpm"
   $jdk_rpm_path = "/etc/puppet/modules/grq/files/$jdk_rpm_file"
-  $jdk_pkg_name = "jdk1.8.0_60"
-  $java_bin_path = "/usr/java/$jdk_pkg_name/jre/bin/java"
+  $jdk_pkg_name = "jdk1.8.x86_64"
+  $java_bin_path = "/usr/java/jdk1.8.0_241-amd64/jre/bin/java"
 
 
   cat_split_file { "$jdk_rpm_file":
@@ -156,26 +156,31 @@ class grq inherits scientific_python {
   #####################################################
 
   $es_heap_size = $msize_mb / 2
+  $es_rpm_file = "elasticsearch-7.1.1-x86_64.rpm"
+  $es_rpm_path = "/etc/puppet/modules/grq/files/$es_rpm_file"
+
+
+  cat_split_file { "$es_rpm_file":
+    install_dir => "/etc/puppet/modules/grq/files",
+    owner       =>  $user,
+    group       =>  $group,
+  }
+
 
   package { 'elasticsearch':
     provider => rpm,
     ensure   => present,
-    source   => "/etc/puppet/modules/grq/files/elasticsearch-1.7.3.noarch.rpm",
-    require  => Exec['set-java'],
+    source   => $es_rpm_path,
+    require  => [
+                  Cat_split_file["$es_rpm_file"],
+                  Exec['set-java'],
+                ],
   }
 
 
   file { "/etc/security/limits.d/99-elasticsearch.conf":
     ensure       => file,
     content      => template('grq/99-elasticsearch.conf'),
-    mode         => 0644,
-    require      => Package['elasticsearch'],
-  }
-
-
-  file { "/usr/lib/systemd/system/elasticsearch.service":
-    ensure       => file,
-    content      => template('grq/elasticsearch.service'),
     mode         => 0644,
     require      => Package['elasticsearch'],
   }
@@ -197,21 +202,29 @@ class grq inherits scientific_python {
   }
 
 
-  file { '/etc/elasticsearch/logging.yml':
+  file { '/etc/elasticsearch/log4j2.properties':
     ensure       => file,
-    content      => template('grq/logging.yml'),
+    content      => template('grq/log4j2.properties'),
     mode         => 0644,
     require      => Package['elasticsearch'],
   }
 
 
-  cat_tarball_bz2 { "elasticsearch-data.tbz2":
-    install_dir => "/var/lib",
-    creates     => "/var/lib/elasticsearch/products_cluster/nodes/0/indices/geonames",
-    owner       => "elasticsearch",
-    group       => "elasticsearch",
-    require     => Package['elasticsearch'],
+  file { "/usr/lib/systemd/system/elasticsearch.service":
+    ensure       => file,
+    content      => template('grq/elasticsearch.service'),
+    mode         => 0644,
+    require      => Package['elasticsearch'],
   }
+
+
+#  cat_tarball_bz2 { "elasticsearch-data.tbz2":
+#    install_dir => "/var/lib",
+#    creates     => "/var/lib/elasticsearch/products_cluster/nodes/0/indices/geonames",
+#    owner       => "elasticsearch",
+#    group       => "elasticsearch",
+#    require     => Package['elasticsearch'],
+#  }
 
 
   service { 'elasticsearch':
@@ -222,25 +235,57 @@ class grq inherits scientific_python {
     provider   => init,
     require    => [
                    File['/etc/security/limits.d/99-elasticsearch.conf'],
-                   File['/usr/lib/systemd/system/elasticsearch.service'],
                    File['/etc/sysconfig/elasticsearch'],
                    File['/etc/elasticsearch/elasticsearch.yml'],
-                   File['/etc/elasticsearch/logging.yml'],
-                   Cat_tarball_bz2['elasticsearch-data.tbz2'],
+                   File['/etc/elasticsearch/log4j2.properties'],
+                   File['/usr/lib/systemd/system/elasticsearch.service'],
+                   #Cat_tarball_bz2['elasticsearch-data.tbz2'],
                    Exec['daemon-reload'],
                   ],
   }
 
 
-  es_plugin { 'kopf':
-    path     => 'lmenezes/elasticsearch-kopf/1.2',
-    require  => Service['elasticsearch'],
+  $cerebro_rpm_file = "cerebro-0.8.5-1.noarch.rpm"
+  $cerebro_rpm_path = "/etc/puppet/modules/grq/files/$cerebro_rpm_file"
+
+
+  cat_split_file { "$cerebro_rpm_file":
+    install_dir => "/etc/puppet/modules/grq/files",
+    owner       =>  $user,
+    group       =>  $group,
   }
 
 
-  es_plugin { 'head':
-    path     => 'mobz/elasticsearch-head',
-    require  => Service['elasticsearch'],
+  package { 'cerebro':
+    provider => rpm,
+    ensure   => present,
+    source   => $cerebro_rpm_path,
+    require  => [
+                  Cat_split_file["$cerebro_rpm_file"],
+                  Service['elasticsearch'],
+                  Exec['set-java'],
+                ],
+  }
+
+
+  file { '/usr/lib/systemd/system/cerebro.service':
+    ensure       => file,
+    content      => template('grq/cerebro.service'),
+    mode         => 0644,
+    require      => Package['cerebro'],
+  }
+
+
+  service { 'cerebro':
+    ensure     => running,
+    enable     => true,
+    hasrestart => true,
+    hasstatus  => true,
+    require    => [
+                   Package['cerebro'],
+                   Exec['daemon-reload'],
+                  ],
+    subscribe  => File['/usr/lib/systemd/system/cerebro.service'],
   }
 
 
@@ -271,15 +316,72 @@ class grq inherits scientific_python {
 
 
   #####################################################
+  # tune kernel for high performance
+  #####################################################
+
+  file { "/usr/lib/sysctl.d":
+    ensure  => directory,
+    mode    => 0755,
+  }
+
+
+  file { "/usr/lib/sysctl.d/grq.conf":
+    ensure  => present,
+    content => template('grq/grq.conf'),
+    mode    => 0644,
+    require => File["/usr/lib/sysctl.d"],
+  }
+
+
+  exec { "sysctl-system":
+    path    => ["/sbin", "/bin", "/usr/bin"],
+    command => "/sbin/sysctl --system",
+    require => File["/usr/lib/sysctl.d/grq.conf"],
+  }
+
+
+  #####################################################
   # install redis
   #####################################################
 
   package { "redis":
-    provider => rpm,
     ensure   => present,
-    source   => "/etc/puppet/modules/grq/files/redis-3.0.4-1.x86_64.rpm",
     notify   => Exec['ldconfig'],
-    require => Exec["no-thp"],
+    require => [
+                Exec["no-thp"],
+                Exec["sysctl-system"],
+               ],
+  }
+
+
+  file { '/etc/redis.conf':
+    ensure       => file,
+    content      => template('mozart/redis.conf'),
+    mode         => 0644,
+    require      => Package['redis'],
+  } 
+
+
+  file { ["/etc/systemd/system/redis.service.d",
+         "/etc/systemd/system/redis-sentinel.service.d"]:
+    ensure  => directory,
+    mode    => 0755,
+  }
+
+
+  file { "/etc/systemd/system/redis.service.d/limit.conf":
+    ensure  => present,
+    content => template('mozart/redis_service.conf'),
+    mode    => 0644,
+    require => File["/etc/systemd/system/redis.service.d"],
+  }
+
+
+  file { "/etc/systemd/system/redis-sentinel.service.d/limit.conf":
+    ensure  => present,
+    content => template('mozart/redis_service.conf'),
+    mode    => 0644,
+    require => File["/etc/systemd/system/redis-sentinel.service.d"],
   }
 
 
@@ -289,7 +391,9 @@ class grq inherits scientific_python {
     hasrestart => true,
     hasstatus  => true,
     require    => [
-                   Package['redis'],
+                   File['/etc/redis.conf'],
+                   File['/etc/systemd/system/redis.service.d/limit.conf'],
+                   File['/etc/systemd/system/redis-sentinel.service.d/limit.conf'],
                    Exec['daemon-reload'],
                   ],
   }
@@ -443,6 +547,11 @@ class grq inherits scientific_python {
   firewalld::zone { 'public':
     services => [ "ssh", "dhcpv6-client", "http", "https" ],
     ports => [
+      { 
+        # Cerebro (ES web admin tool)
+        port     => "9000",
+        protocol => "tcp",
+      },
       {
         # ElasticSearch
         port     => "9200",
