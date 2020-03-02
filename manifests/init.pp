@@ -356,7 +356,7 @@ class grq inherits scientific_python {
 
   file { '/etc/redis.conf':
     ensure       => file,
-    content      => template('mozart/redis.conf'),
+    content      => template('grq/redis.conf'),
     mode         => 0644,
     require      => Package['redis'],
   } 
@@ -371,7 +371,7 @@ class grq inherits scientific_python {
 
   file { "/etc/systemd/system/redis.service.d/limit.conf":
     ensure  => present,
-    content => template('mozart/redis_service.conf'),
+    content => template('grq/redis_service.conf'),
     mode    => 0644,
     require => File["/etc/systemd/system/redis.service.d"],
   }
@@ -379,7 +379,7 @@ class grq inherits scientific_python {
 
   file { "/etc/systemd/system/redis-sentinel.service.d/limit.conf":
     ensure  => present,
-    content => template('mozart/redis_service.conf'),
+    content => template('grq/redis_service.conf'),
     mode    => 0644,
     require => File["/etc/systemd/system/redis-sentinel.service.d"],
   }
