@@ -1,0 +1,23 @@
+[Unit]
+Description=Elasticsearch web admin tool
+Requires=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/var/lib/cerebro
+EnvironmentFile=/etc/default/cerebro
+ExecStart=/usr/share/cerebro/bin/cerebro -Ddata.path=/var/lib/cerebro/cerebro.db
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
+RestartSec=60
+SuccessExitStatus=143
+TimeoutStopSec=5
+User=cerebro
+ExecStartPre=/bin/mkdir -p /run/cerebro
+ExecStartPre=/bin/chown cerebro:cerebro /run/cerebro
+ExecStartPre=/bin/chmod 755 /run/cerebro
+PermissionsStartOnly=true
+LimitNOFILE=1024
+
+[Install]
+WantedBy=multi-user.target
