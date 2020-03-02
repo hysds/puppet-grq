@@ -69,7 +69,7 @@ discovery.seed_hosts: []
 #
 # Bootstrap the cluster using an initial set of master-eligible nodes:
 #
-cluster.initial_master_nodes: ["resource_cluster-master"]
+cluster.initial_master_nodes: ["products_cluster-master"]
 #
 # For more information, consult the discovery and cluster formation module documentation.
 #
@@ -87,9 +87,6 @@ cluster.initial_master_nodes: ["resource_cluster-master"]
 #
 #action.destructive_requires_name: true
 
-# Allow aggregations to execute scripts
-script.engine.groovy.inline.aggs: on
-
 # increase threadpool for search and index
-threadpool.search.queue_size: 10000
-threadpool.index.queue_size: 10000
+thread_pool.search.queue_size: 10000
+thread_pool.write.queue_size: 10000
