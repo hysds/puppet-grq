@@ -218,13 +218,13 @@ class grq inherits scientific_python {
   }
 
 
-#  cat_tarball_bz2 { "elasticsearch-data.tbz2":
-#    install_dir => "/var/lib",
-#    creates     => "/var/lib/elasticsearch/products_cluster/nodes/0/indices/geonames",
-#    owner       => "elasticsearch",
-#    group       => "elasticsearch",
-#    require     => Package['elasticsearch'],
-#  }
+  cat_tarball_bz2 { "elasticsearch-data.tbz2":
+    install_dir => "/var/lib",
+    creates     => "/var/lib/elasticsearch/products_cluster/nodes/0/indices/geonames",
+    owner       => "elasticsearch",
+    group       => "elasticsearch",
+    require     => Package['elasticsearch'],
+  }
 
 
   service { 'elasticsearch':
@@ -239,7 +239,7 @@ class grq inherits scientific_python {
                    File['/etc/elasticsearch/elasticsearch.yml'],
                    File['/etc/elasticsearch/log4j2.properties'],
                    File['/usr/lib/systemd/system/elasticsearch.service'],
-                   #Cat_tarball_bz2['elasticsearch-data.tbz2'],
+                   Cat_tarball_bz2['elasticsearch-data.tbz2'],
                    Exec['daemon-reload'],
                   ],
   }
