@@ -42,7 +42,6 @@ if [ ! -d "$HOME/$PACKAGE" ]; then
 fi
 cd $HOME/$PACKAGE
 if [ "$release" = "develop" ]; then
-  git checkout $release
   ./install.sh -d $token grq
 else
   ./install.sh -r $release $token grq
