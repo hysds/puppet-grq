@@ -41,7 +41,7 @@ if [ ! -d "$HOME/$PACKAGE" ]; then
   git clone ${GIT_URL}/hysds/${PACKAGE}.git
 fi
 cd $HOME/$PACKAGE
-if [ "$release" = "develop-es7" ]; then
+if [ "$release" = "develop" ]; then
   git checkout $release
   ./install.sh -d $token grq
 else
