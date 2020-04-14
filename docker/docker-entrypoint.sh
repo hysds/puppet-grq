@@ -32,17 +32,6 @@ if [ -e "$HOME/sciflo/bin/activate" ]; then
   source $HOME/sciflo/bin/activate
 fi
 
-# ensure db for tosca exists
-if [ ! -d "$HOME/sciflo/ops/tosca/data" ]; then
-  mkdir -p $HOME/sciflo/ops/tosca/data
-fi
-if [ -e `readlink $HOME/sciflo/ops/tosca/settings.cfg` ]; then
-  $HOME/sciflo/ops/tosca/db_create.py
-fi
-
-# create user rules index
-$HOME/sciflo/ops/tosca/scripts/create_user_rules_index.py || :
-
 # install ES template for grq datasets
 $HOME/sciflo/ops/grq2/scripts/install_es_template.sh || :
 

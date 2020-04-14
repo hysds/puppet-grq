@@ -118,17 +118,6 @@ if [ "$?" -ne 0 ]; then
 fi
 
 
-# export latest tosca package
-cd $OPS
-PACKAGE=tosca
-cd $OPS/$PACKAGE
-pip install -e .
-if [ "$?" -ne 0 ]; then
-  echo "Failed to run 'pip install -e .' for $PACKAGE."
-  exit 1
-fi
-
-
 # export latest pele package
 cd $OPS
 PACKAGE=pele
