@@ -156,7 +156,7 @@ class grq inherits scientific_python {
   #####################################################
 
   $es_heap_size = $msize_mb / 2
-  $es_rpm_file = "elasticsearch-7.1.1-x86_64.rpm"
+  $es_rpm_file = "elasticsearch-7.9.3-x86_64.rpm"
   $es_rpm_path = "/etc/puppet/modules/grq/files/$es_rpm_file"
 
 
