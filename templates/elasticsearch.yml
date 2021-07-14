@@ -87,6 +87,9 @@ cluster.initial_master_nodes: ["products_cluster-master"]
 #
 #action.destructive_requires_name: true
 
-# increase thread pools for search and write
-thread_pool.search.queue_size: 100000
+# increase thread pools for get, write and search
+thread_pool.get.queue_size: 100000
 thread_pool.write.queue_size: 100000
+thread_pool.search.queue_size: 5000
+thread_pool.search.min_queue_size: 2000
+thread_pool.search.max_queue_size: 10000
