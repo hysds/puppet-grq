@@ -36,7 +36,7 @@ class grq inherits hysds_base {
     unless  => "mysqladmin -u$mysql_user -p$mysql_password status",
     path    => ["/bin", "/usr/bin"],
     command => "mysqladmin -u$mysql_user password $mysql_password",
-    require => Exec["mariadb-start"],
+    require => Exec["mysql-start"],
   }
 
 
