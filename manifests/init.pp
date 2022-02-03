@@ -13,7 +13,7 @@ class grq inherits hysds_base {
     content => template('grq/bash_profile'),
     owner   => $user,
     group   => $group,
-    mode    => 0644,
+    mode    => "0644",
     require => User[$user],
   }
 
@@ -44,7 +44,7 @@ class grq inherits hysds_base {
   # create grq/urlCatalog db and add user with all rights
   #####################################################
 
-  mysqldb { 'grq':
+  grq::mysqldb { 'grq':
     user           => $user,
     password       => '',
     admin_user     => $mysql_user, 
@@ -53,7 +53,7 @@ class grq inherits hysds_base {
   }
 
 
-  mysqldb { 'urlCatalog':
+  grq::mysqldb { 'urlCatalog':
     user           => $user,
     password       => '',
     admin_user     => $mysql_user, 
@@ -65,7 +65,7 @@ class grq inherits hysds_base {
   file { '/etc/logrotate.d/mysql-backup':
     ensure  => file,
     content  => template('grq/mysql-backup'),
-    mode    => 0644,
+    mode    => "0644",
   }
 
 
@@ -101,13 +101,13 @@ class grq inherits hysds_base {
   #####################################################
 
   $jdk_rpm_file = "jdk-8u241-linux-x64.rpm"
-  $jdk_rpm_path = "/etc/puppet/modules/grq/files/$jdk_rpm_file"
+  $jdk_rpm_path = "/etc/puppetlabs/code/modules/grq/files/$jdk_rpm_file"
   $jdk_pkg_name = "jdk1.8.x86_64"
   $java_bin_path = "/usr/java/jdk1.8.0_241-amd64/jre/bin/java"
 
 
-  cat_split_file { "$jdk_rpm_file":
-    install_dir => "/etc/puppet/modules/grq/files",
+  grq::cat_split_file { "$jdk_rpm_file":
+    install_dir => "/etc/puppetlabs/code/modules/grq/files",
     owner       =>  $user,
     group       =>  $group,
   }
@@ -118,11 +118,11 @@ class grq inherits hysds_base {
     ensure   => present,
     source   => $jdk_rpm_path,
     notify   => Exec['ldconfig'],
-    require     => Cat_split_file["$jdk_rpm_file"],
+    require     => Grq::Cat_split_file["$jdk_rpm_file"],
   }
 
 
-  update_alternatives { 'java':
+  grq::update_alternatives { 'java':
     path     => $java_bin_path,
     require  => [
                  Package[$jdk_pkg_name],
@@ -140,7 +140,7 @@ class grq inherits hysds_base {
     content  => template('grq/install_hysds.sh'),
     owner   => $user,
     group   => $group,
-    mode    => 0755,
+    mode    => "0755",
     require => User[$user],
   }
 
@@ -155,7 +155,7 @@ class grq inherits hysds_base {
     ensure  => directory,
     owner   => $user,
     group   => $group,
-    mode    => 0755,
+    mode    => "0755",
     require => User[$user],
   }
 
@@ -164,7 +164,7 @@ class grq inherits hysds_base {
     ensure  => present,
     owner   => $user,
     group   => $group,
-    mode    => 0755,
+    mode    => "0755",
     content => template('grq/start_grq'),
     require => File["$sciflo_dir/bin"],
   }
@@ -174,7 +174,7 @@ class grq inherits hysds_base {
     ensure  => present,
     owner   => $user,
     group   => $group,
-    mode    => 0755,
+    mode    => "0755",
     content => template('grq/stop_grq'),
     require => File["$sciflo_dir/bin"],
   }
@@ -187,7 +187,7 @@ class grq inherits hysds_base {
   file { '/etc/rc.d/rc.local':
     ensure  => file,
     content  => template('grq/rc.local'),
-    mode    => 0755,
+    mode    => "0755",
   }
 
 
@@ -198,7 +198,7 @@ class grq inherits hysds_base {
   file { "/etc/security/limits.d/99-$user.conf":
     ensure  => file,
     content  => template('grq/limits.conf'),
-    mode    => 0644,
+    mode    => "0644",
   }
 
 
@@ -209,7 +209,7 @@ class grq inherits hysds_base {
   file { "/etc/httpd/conf.d/autoindex.conf":
     ensure  => present,
     content => template('grq/autoindex.conf'),
-    mode    => 0644,
+    mode    => "0644",
     require => Package['httpd'],
   }
 
@@ -217,7 +217,7 @@ class grq inherits hysds_base {
   file { "/etc/httpd/conf.d/welcome.conf":
     ensure  => present,
     content => template('grq/welcome.conf'),
-    mode    => 0644,
+    mode    => "0644",
     require => Package['httpd'],
   }
 
@@ -225,7 +225,7 @@ class grq inherits hysds_base {
   file { "/etc/httpd/conf.d/ssl.conf":
     ensure  => present,
     content => template('grq/ssl.conf'),
-    mode    => 0644,
+    mode    => "0644",
     require => Package['httpd'],
   }
 
@@ -233,7 +233,7 @@ class grq inherits hysds_base {
   file { '/var/www/html/index.html':
     ensure  => file,
     content => template('grq/index.html'),
-    mode    => 0644,
+    mode    => "0644",
     require => Package['httpd'],
   }
 
@@ -242,7 +242,7 @@ class grq inherits hysds_base {
     ensure  => directory,
     owner   => 'apache',
     group   => 'apache',
-    mode    => 0755,
+    mode    => "0755",
     require => Package['httpd'],
   }
 
@@ -250,7 +250,7 @@ class grq inherits hysds_base {
   file { "/etc/httpd/conf.d/mod_evasive.conf":
     ensure  => present,
     content => template('grq/mod_evasive.conf'),
-    mode    => 0644,
+    mode    => "0644",
     require => Package['httpd'],
   }
 

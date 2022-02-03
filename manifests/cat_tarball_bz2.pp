@@ -5,14 +5,14 @@ define grq::cat_tarball_bz2($pkg_tbz2=$title, $install_dir, $owner, $group, $cre
     ensure  => directory,
     #owner   => $user,
     #group   => $group,
-    mode    => 0755,
+    mode    => "0755",
   }
 
   # cat the tarball parts
   exec { "cat $pkg_tbz2.*":
     creates => "/tmp/$pkg_tbz2",
     path    => ["/bin", "/usr/bin"],
-    command => "cat /etc/puppet/modules/grq/files/$pkg_tbz2.* > /tmp/$pkg_tbz2",
+    command => "cat /etc/puppetlabs/code/modules/grq/files/$pkg_tbz2.* > /tmp/$pkg_tbz2",
     notify  => Exec["untar $pkg_tbz2"],
   }
 

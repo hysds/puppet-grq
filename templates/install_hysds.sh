@@ -5,16 +5,17 @@ BASE_PATH=$(cd "${BASE_PATH}"; pwd)
 
 # usage
 usage() {
-  echo "usage: $0 <release tag>" >&2
+  echo "usage: $0 <repo branch> <release tag>" >&2
 }
 
 
 # check usage
-if [ $# -ne 1 ]; then
+if [ $# -ne 2 ]; then
   usage
   exit 1
 fi
-release=$1
+branch=$1
+release=$2
 
 
 # print out commands and exit on any errors
@@ -38,7 +39,7 @@ fi
 cd $HOME
 PACKAGE=hysds-framework
 if [ ! -d "$HOME/$PACKAGE" ]; then
-  git clone -b $release --single-branch ${GIT_URL}/hysds/${PACKAGE}.git
+  git clone -b $branch --single-branch ${GIT_URL}/hysds/${PACKAGE}.git
 fi
 cd $HOME/$PACKAGE
 if [ "$release" = "develop" ]; then
@@ -53,80 +54,6 @@ SCIFLO_DIR=<%= @sciflo_dir %>
 
 # source virtualenv
 source $SCIFLO_DIR/bin/activate
-
-
-# create sciflo scripts directory
-if [ ! -d "$SCIFLO_DIR/scripts" ]; then
-  mkdir $SCIFLO_DIR/scripts
-fi
-
-
-# create sqlite_data directory
-if [ ! -d "$SCIFLO_DIR/sqlite_data" ]; then
-  mkdir $SCIFLO_DIR/sqlite_data
-  for i in `echo AIRS ALOS CloudSat MODIS-Terra MODIS-Aqua`; do
-    touch $SCIFLO_DIR/sqlite_data/${i}.db
-  done
-fi
-
-
-# create ops directory
-OPS="$SCIFLO_DIR/ops"
-if [ ! -d "$OPS" ]; then
-  mkdir $OPS
-fi
-
-
-# export latest eosUtils package
-cd $OPS
-PACKAGE=eosUtils
-if [ ! -d "$OPS/$PACKAGE" ]; then
-  git clone ${GIT_URL}/hysds/${PACKAGE}.git
-fi
-cd $OPS/$PACKAGE
-pip install -e .
-if [ "$?" -ne 0 ]; then
-  echo "Failed to run 'pip install -e .' for $PACKAGE."
-  exit 1
-fi
-
-
-# export latest soap package
-cd $OPS
-PACKAGE=soap
-if [ ! -d "$OPS/$PACKAGE" ]; then
-  git clone ${GIT_URL}/hysds/${PACKAGE}.git
-fi
-
-
-# export latest crawler package
-cd $OPS
-PACKAGE=crawler
-if [ ! -d "$OPS/$PACKAGE" ]; then
-  git clone ${GIT_URL}/hysds/${PACKAGE}.git
-fi
-
-
-# export latest grq2 package
-cd $OPS
-PACKAGE=grq2
-cd $OPS/$PACKAGE
-pip install -e .
-if [ "$?" -ne 0 ]; then
-  echo "Failed to run 'pip install -e .' for $PACKAGE."
-  exit 1
-fi
-
-
-# export latest pele package
-cd $OPS
-PACKAGE=pele
-cd $OPS/$PACKAGE
-pip install -e .
-if [ "$?" -ne 0 ]; then
-  echo "Failed to run 'pip install -e .' for $PACKAGE."
-  exit 1
-fi
 
 
 # cleanup pkgs
