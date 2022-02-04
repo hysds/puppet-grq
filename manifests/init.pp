@@ -32,34 +32,34 @@ class grq inherits hysds_base {
   $mysql_user = "root"
   $mysql_password = "sciflo"
 
-  exec { "set-mysql-password":
-    unless  => "mysqladmin -u$mysql_user -p$mysql_password status",
-    path    => ["/bin", "/usr/bin"],
-    command => "mysqladmin -u$mysql_user password $mysql_password",
-    require => Exec["mariadb-start"],
-  }
+  #exec { "set-mysql-password":
+  #  unless  => "mysqladmin -u$mysql_user -p$mysql_password status",
+  #  path    => ["/bin", "/usr/bin"],
+  #  command => "mysqladmin -u$mysql_user password $mysql_password",
+  #  require => Exec["mariadb-start"],
+  #}
 
 
   #####################################################
   # create grq/urlCatalog db and add user with all rights
   #####################################################
 
-  grq::mysqldb { 'grq':
-    user           => $user,
-    password       => '',
-    admin_user     => $mysql_user, 
-    admin_password => $mysql_password, 
-    require        => Exec['set-mysql-password'],
-  }
+  #grq::mysqldb { 'grq':
+  #  user           => $user,
+  #  password       => '',
+  #  admin_user     => $mysql_user, 
+  #  admin_password => $mysql_password, 
+  #  require        => Exec['set-mysql-password'],
+  #}
 
 
-  grq::mysqldb { 'urlCatalog':
-    user           => $user,
-    password       => '',
-    admin_user     => $mysql_user, 
-    admin_password => $mysql_password, 
-    require        => Exec['set-mysql-password'],
-  }
+  #grq::mysqldb { 'urlCatalog':
+  #  user           => $user,
+  #  password       => '',
+  #  admin_user     => $mysql_user, 
+  #  admin_password => $mysql_password, 
+  #  require        => Exec['set-mysql-password'],
+  #}
 
 
   file { '/etc/logrotate.d/mysql-backup':
