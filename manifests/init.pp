@@ -80,8 +80,8 @@ class grq inherits hysds_base {
     'mod_evasive': ensure => present;
     'geos-devel': ensure => installed;
     'proj-devel': ensure => installed;
-    'geos-python': ensure => installed;
-    'numpy': ensure => installed;
+    #'geos-python': ensure => installed;
+    #'numpy': ensure => installed;
   }
 
 
