@@ -77,7 +77,7 @@ site_pp=$mod_dir/site.pp
 
 # check that module is here; if not, export it
 if [ ! -d $mod_dir ]; then
-  $git_cmd clone --single-branch -b $BASE_BRANCH $git_loc $mod_dir
+  $git_cmd clone --single-branch -b $BASE_BRANCH $git_loc $mod_dir --depth 1
 fi
 
 
@@ -91,7 +91,7 @@ site_pp=$mod_dir/site.pp
 
 # check that module is here; if not, export it
 if [ ! -d $mod_dir ]; then
-  $git_cmd clone --single-branch -b $BRANCH $git_loc $mod_dir
+  $git_cmd clone --single-branch -b $BRANCH $git_loc $mod_dir --depth 1
 fi
 
 
