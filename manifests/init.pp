@@ -32,34 +32,34 @@ class grq inherits hysds_base {
   $mysql_user = "root"
   $mysql_password = "sciflo"
 
-  exec { "set-mysql-password":
-    unless  => "mysqladmin -u$mysql_user -p$mysql_password status",
-    path    => ["/bin", "/usr/bin"],
-    command => "mysqladmin -u$mysql_user password $mysql_password",
-    require => Exec["mariadb-start"],
-  }
+  #exec { "set-mysql-password":
+  #  unless  => "mysqladmin -u$mysql_user -p$mysql_password status",
+  #  path    => ["/bin", "/usr/bin"],
+  #  command => "mysqladmin -u$mysql_user password $mysql_password",
+  #  require => Exec["mariadb-start"],
+  #}
 
 
   #####################################################
   # create grq/urlCatalog db and add user with all rights
   #####################################################
 
-  mysqldb { 'grq':
-    user           => $user,
-    password       => '',
-    admin_user     => $mysql_user, 
-    admin_password => $mysql_password, 
-    require        => Exec['set-mysql-password'],
-  }
+  #mysqldb { 'grq':
+  #  user           => $user,
+  #  password       => '',
+  #  admin_user     => $mysql_user,
+  #  admin_password => $mysql_password,
+  #  require        => Exec['set-mysql-password'],
+  #}
 
 
-  mysqldb { 'urlCatalog':
-    user           => $user,
-    password       => '',
-    admin_user     => $mysql_user, 
-    admin_password => $mysql_password, 
-    require        => Exec['set-mysql-password'],
-  }
+  #mysqldb { 'urlCatalog':
+  #  user           => $user,
+  #  password       => '',
+  #  admin_user     => $mysql_user,
+  #  admin_password => $mysql_password,
+  #  require        => Exec['set-mysql-password'],
+  #}
 
 
   file { '/etc/logrotate.d/mysql-backup':
@@ -80,8 +80,8 @@ class grq inherits hysds_base {
     'mod_evasive': ensure => present;
     'geos-devel': ensure => installed;
     'proj-devel': ensure => installed;
-    'geos-python': ensure => installed;
-    'numpy': ensure => installed;
+    #'geos-python': ensure => installed;
+    #'numpy': ensure => installed;
   }
 
 
@@ -255,21 +255,21 @@ class grq inherits hysds_base {
   }
 
 
-  service { 'httpd':
-    ensure     => running,
-    enable     => true,
-    hasrestart => true,
-    hasstatus  => true,
-    require    => [
-                   File['/etc/httpd/conf.d/autoindex.conf'],
-                   File['/etc/httpd/conf.d/welcome.conf'],
-                   File['/etc/httpd/conf.d/ssl.conf'],
-                   File['/var/www/html/index.html'],
-                   File['/var/log/mod_evasive'],
-                   File['/etc/httpd/conf.d/mod_evasive.conf'],
-                   Exec['daemon-reload'],
-                  ],
-  }
+  #service { 'httpd':
+  #  ensure     => running,
+  #  enable     => true,
+  #  hasrestart => true,
+  #  hasstatus  => true,
+  #  require    => [
+  #                 File['/etc/httpd/conf.d/autoindex.conf'],
+  #                 File['/etc/httpd/conf.d/welcome.conf'],
+  #                 File['/etc/httpd/conf.d/ssl.conf'],
+  #                 File['/var/www/html/index.html'],
+  #                 File['/var/log/mod_evasive'],
+  #                 File['/etc/httpd/conf.d/mod_evasive.conf'],
+  #                 Exec['daemon-reload'],
+  #                ],
+  #}
 
 
 }
