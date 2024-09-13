@@ -1,5 +1,5 @@
 # syntax = docker/dockerfile:1.0-experimental
-ARG TAG=HC-522
+ARG TAG=HC-522-update
 FROM hysds/dev:${TAG}
 
 # get org and branch
@@ -61,22 +61,22 @@ RUN set -ex \
  && sudo rm -f /tmp/install.sh \
  && sudo rm -rf /var/cache/dnf
 
-# copy ops home
-COPY --chown=ops:ops --from=0 /home/ops /home/ops
+# copy root
+COPY --chown=root:root --from=0 /root /root
 
 # link configuration files
 RUN set -ex \
- && ln -sf /home/ops/sciflo/etc/celeryconfig.py /home/ops/sciflo/ops/hysds/celeryconfig.py \
- && ln -sf /home/ops/sciflo/etc/grq2_settings.cfg /home/ops/sciflo/ops/grq2/settings.cfg \
- && ln -sf /home/ops/sciflo/etc/pele_settings.cfg /home/ops/sciflo/ops/pele/settings.cfg \
- && ln -sf /home/ops/sciflo/etc/server.key /home/ops/sciflo/ops/grq2/server.key \
- && ln -sf /home/ops/sciflo/etc/server.pem /home/ops/sciflo/ops/grq2/server.pem \
- && ln -sf /home/ops/sciflo/etc/server.key /home/ops/sciflo/ops/pele/server.key \
- && ln -sf /home/ops/sciflo/etc/server.pem /home/ops/sciflo/ops/pele/server.pem
+ && ln -sf $HOME/sciflo/etc/celeryconfig.py $HOME/sciflo/ops/hysds/celeryconfig.py \
+ && ln -sf $HOME/sciflo/etc/grq2_settings.cfg $HOME/sciflo/ops/grq2/settings.cfg \
+ && ln -sf $HOME/sciflo/etc/pele_settings.cfg $HOME/sciflo/ops/pele/settings.cfg \
+ && ln -sf $HOME/sciflo/etc/server.key $HOME/sciflo/ops/grq2/server.key \
+ && ln -sf $HOME/sciflo/etc/server.pem $HOME/sciflo/ops/grq2/server.pem \
+ && ln -sf $HOME/sciflo/etc/server.key $HOME/sciflo/ops/pele/server.key \
+ && ln -sf $HOME/sciflo/etc/server.pem $HOME/sciflo/ops/pele/server.pem
 
 # set default supervisord conf and copy includes
-COPY --chown=ops:ops docker/supervisord.conf /home/ops/sciflo/etc/supervisord.conf
-COPY --chown=ops:ops docker/conf.d /home/ops/sciflo/etc/conf.d
+COPY --chown=root:root docker/supervisord.conf $HOME/sciflo/etc/supervisord.conf
+COPY --chown=root:root docker/conf.d $HOME/sciflo/etc/conf.d
 
 # set entrypoint
 COPY docker/wait-for-it.sh /wait-for-it.sh
