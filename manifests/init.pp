@@ -8,7 +8,7 @@ class grq inherits hysds_base {
   # copy user files
   #####################################################
   
-  file { "/home/$user/.bash_profile":
+  file { "/$user/.bash_profile":
     ensure  => present,
     content => template('grq/bash_profile'),
     owner   => $user,
@@ -22,7 +22,7 @@ class grq inherits hysds_base {
   # get sciflo directory
   #####################################################
 
-  $sciflo_dir = "/home/$user/sciflo"
+  $sciflo_dir = "/$user/sciflo"
 
 
   #####################################################
@@ -136,7 +136,7 @@ class grq inherits hysds_base {
   # install install_hysds.sh script in ops home
   #####################################################
 
-  file { "/home/$user/install_hysds.sh":
+  file { "/$user/install_hysds.sh":
     ensure  => present,
     content  => template('grq/install_hysds.sh'),
     owner   => $user,
