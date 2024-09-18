@@ -19,7 +19,7 @@ ADD https://api.github.com/repos/${ORG}/puppet-grq/git/refs/heads/${BRANCH} vers
 
 # provision via puppet
 RUN --mount=type=secret,id=git_oauth_token sudo cp /run/secrets/git_oauth_token $HOME/.git_oauth_token \
- && sudo chown ops:ops $HOME/.git_oauth_token \
+ && sudo chown root:root $HOME/.git_oauth_token \
  && set -ex \
  && sudo dnf update -y \
  && sudo curl -skL ${GIT_URL} > /tmp/install.sh \
