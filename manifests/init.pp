@@ -78,7 +78,7 @@ class grq inherits hysds_base {
     'httpd': ensure => present;
     'mod_ssl': ensure => present;
     #'mod_evasive': ensure => present;
-    'https://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/m/mod_evasive-1.10.1-22.el7.x86_64.rpm': ensure => present;
+    'https://dl.fedoraproject.org/pub/archive/epel/7/x86_64/Packages/m/mod_evasive-1.10.1-22.el7.x86_64.rpm': ensure => present;
     'geos-devel': ensure => installed;
     'proj-devel': ensure => installed;
     #'geos-python': ensure => installed;
