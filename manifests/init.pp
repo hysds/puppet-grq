@@ -101,10 +101,10 @@ class grq inherits hysds_base {
   # install oracle java and set default
   #####################################################
 
-  $jdk_rpm_file = "jdk-8u241-linux-x64.rpm"
+  $jdk_rpm_file = "jdk-8u461-linux-aarch64.rpm"
   $jdk_rpm_path = "/etc/puppetlabs/code/modules/grq/files/$jdk_rpm_file"
-  $jdk_pkg_name = "jdk1.8.x86_64"
-  $java_bin_path = "/usr/java/jdk1.8.0_241-amd64/jre/bin/java"
+  $jdk_pkg_name = "jdk1.8.aarch64"
+  $java_bin_path = "/usr/java/jdk1.8.0_461-aarch64/jre/bin/java"
 
 
   grq::cat_split_file { "$jdk_rpm_file":
