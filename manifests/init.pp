@@ -78,7 +78,7 @@ class grq inherits hysds_base {
     'httpd': ensure => present;
     'mod_ssl': ensure => present;
     #'mod_evasive': ensure => present;
-    'https://dl.fedoraproject.org/pub/archive/epel/7/x86_64/Packages/m/mod_evasive-1.10.1-22.el7.x86_64.rpm': ensure => present;
+    'https://dl.fedoraproject.org/pub/archive/epel/7/aarch64/Packages/m/mod_evasive-1.10.1-22.el7.aarch64.rpm': ensure => present;
     'geos-devel': ensure => installed;
     'proj-devel': ensure => installed;
     #'geos-python': ensure => installed;
@@ -104,7 +104,7 @@ class grq inherits hysds_base {
   $jdk_rpm_file = "jdk-8u461-linux-aarch64.rpm"
   $jdk_rpm_path = "/etc/puppetlabs/code/modules/grq/files/$jdk_rpm_file"
   $jdk_pkg_name = "jdk1.8.aarch64"
-  $java_bin_path = "/usr/java/jdk1.8.0_461-aarch64/jre/bin/java"
+  $java_bin_path = "/usr/java/jdk1.8.0-aarch64/jre/bin/java"
 
 
   grq::cat_split_file { "$jdk_rpm_file":
