@@ -73,12 +73,24 @@ class grq inherits hysds_base {
   # install packages
   #####################################################
 
+  # Determine architecture for mod_evasive RPM
+  $arch = $::architecture
+  
+  # Map architecture to mod_evasive RPM URL
+  if $arch == 'x86_64' {
+    $mod_evasive_rpm = 'https://dl.fedoraproject.org/pub/archive/epel/7/x86_64/Packages/m/mod_evasive-1.10.1-22.el7.x86_64.rpm'
+  } elsif $arch == 'aarch64' {
+    $mod_evasive_rpm = 'https://dl.fedoraproject.org/pub/archive/epel/7/aarch64/Packages/m/mod_evasive-1.10.1-22.el7.aarch64.rpm'
+  } else {
+    fail("Unsupported architecture: ${arch}")
+  }
+
   package {
     'mailx': ensure => present;
     'httpd': ensure => present;
     'mod_ssl': ensure => present;
     #'mod_evasive': ensure => present;
-    'https://dl.fedoraproject.org/pub/archive/epel/7/x86_64/Packages/m/mod_evasive-1.10.1-22.el7.x86_64.rpm': ensure => present;
+    "${mod_evasive_rpm}": ensure => present;
     'geos-devel': ensure => installed;
     'proj-devel': ensure => installed;
     #'geos-python': ensure => installed;
@@ -99,12 +111,24 @@ class grq inherits hysds_base {
   
   #####################################################
   # install oracle java and set default
+  # Architecture-specific JDK installation
   #####################################################
 
-  $jdk_rpm_file = "jdk-8u241-linux-x64.rpm"
+  # Map architecture to JDK file names
+  # x86_64 uses x64, aarch64 uses aarch64
+  if $arch == 'x86_64' {
+    $jdk_rpm_file = "jdk-8u241-linux-x64.rpm"
+    $jdk_pkg_name = "jdk1.8.x86_64"
+    $java_bin_path = "/usr/java/jdk1.8.0_241-amd64/jre/bin/java"
+  } elsif $arch == 'aarch64' {
+    $jdk_rpm_file = "jdk-8u241-linux-aarch64.rpm"
+    $jdk_pkg_name = "jdk1.8.aarch64"
+    $java_bin_path = "/usr/java/jdk1.8.0_241-aarch64/jre/bin/java"
+  } else {
+    fail("Unsupported architecture: ${arch}")
+  }
+
   $jdk_rpm_path = "/etc/puppetlabs/code/modules/grq/files/$jdk_rpm_file"
-  $jdk_pkg_name = "jdk1.8.x86_64"
-  $java_bin_path = "/usr/java/jdk1.8.0_241-amd64/jre/bin/java"
 
 
   grq::cat_split_file { "$jdk_rpm_file":
