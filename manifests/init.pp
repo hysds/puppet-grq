@@ -110,49 +110,23 @@ class grq inherits hysds_base {
 
   
   #####################################################
-  # install oracle java and set default
-  # Architecture-specific JDK installation
+  # install OpenJDK 8 (multi-architecture compatible)
+  # Uses system repositories instead of Oracle JDK RPMs
   #####################################################
 
-  # Map architecture to JDK file names
-  # x86_64 uses x64, aarch64 uses aarch64
-  if $arch == 'x86_64' {
-    $jdk_rpm_file = "jdk-8u241-linux-x64.rpm"
-    $jdk_pkg_name = "jdk1.8.x86_64"
-    $java_bin_path = "/usr/java/jdk1.8.0_241-amd64/jre/bin/java"
-  } elsif $arch == 'aarch64' {
-    $jdk_rpm_file = "jdk-8u241-linux-aarch64.rpm"
-    $jdk_pkg_name = "jdk1.8.aarch64"
-    $java_bin_path = "/usr/java/jdk1.8.0_241-aarch64/jre/bin/java"
-  } else {
-    fail("Unsupported architecture: ${arch}")
+  # Install OpenJDK 8 from system repositories
+  # This works on both x86_64 and aarch64 without separate RPM files
+  package { 'java-1.8.0-openjdk-devel':
+    ensure => present,
+    notify => Exec['ldconfig'],
   }
 
-  $jdk_rpm_path = "/etc/puppetlabs/code/modules/grq/files/$jdk_rpm_file"
-
-
-  grq::cat_split_file { "$jdk_rpm_file":
-    install_dir => "/etc/puppetlabs/code/modules/grq/files",
-    owner       =>  $user,
-    group       =>  $group,
-  }
-
-
-  package { "$jdk_pkg_name":
-    provider => rpm,
-    ensure   => present,
-    source   => $jdk_rpm_path,
-    notify   => Exec['ldconfig'],
-    require     => Grq::Cat_split_file["$jdk_rpm_file"],
-  }
-
-
-  grq::update_alternatives { 'java':
-    path     => $java_bin_path,
-    require  => [
-                 Package[$jdk_pkg_name],
-                 Exec['ldconfig']
-                ],
+  # Set java alternatives to use OpenJDK 8
+  # The path is architecture-independent for OpenJDK
+  exec { 'set-java-alternatives':
+    command => '/usr/sbin/alternatives --set java /usr/lib/jvm/jre-1.8.0-openjdk/bin/java',
+    unless  => '/usr/sbin/alternatives --display java | grep "link currently points to /usr/lib/jvm/jre-1.8.0-openjdk/bin/java"',
+    require => Package['java-1.8.0-openjdk-devel'],
   }
 
 
