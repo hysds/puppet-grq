@@ -73,12 +73,24 @@ class grq inherits hysds_base {
   # install packages
   #####################################################
 
+  # Determine architecture for mod_evasive RPM
+  $arch = $::architecture
+  
+  # Map architecture to mod_evasive RPM URL
+  if $arch == 'x86_64' {
+    $mod_evasive_rpm = 'https://dl.fedoraproject.org/pub/archive/epel/7/x86_64/Packages/m/mod_evasive-1.10.1-22.el7.x86_64.rpm'
+  } elsif $arch == 'aarch64' {
+    $mod_evasive_rpm = 'https://dl.fedoraproject.org/pub/archive/epel/7/aarch64/Packages/m/mod_evasive-1.10.1-22.el7.aarch64.rpm'
+  } else {
+    fail("Unsupported architecture: ${arch}")
+  }
+
   package {
     'mailx': ensure => present;
     'httpd': ensure => present;
     'mod_ssl': ensure => present;
     #'mod_evasive': ensure => present;
-    'https://dl.fedoraproject.org/pub/archive/epel/7/x86_64/Packages/m/mod_evasive-1.10.1-22.el7.x86_64.rpm': ensure => present;
+    "${mod_evasive_rpm}": ensure => present;
     'geos-devel': ensure => installed;
     'proj-devel': ensure => installed;
     #'geos-python': ensure => installed;
@@ -98,37 +110,24 @@ class grq inherits hysds_base {
 
   
   #####################################################
-  # install oracle java and set default
+  # install OpenJDK 8 (multi-architecture compatible)
+  # Uses system repositories instead of Oracle JDK RPMs
   #####################################################
 
-  $jdk_rpm_file = "jdk-8u241-linux-x64.rpm"
-  $jdk_rpm_path = "/etc/puppetlabs/code/modules/grq/files/$jdk_rpm_file"
-  $jdk_pkg_name = "jdk1.8.x86_64"
-  $java_bin_path = "/usr/java/jdk1.8.0_241-amd64/jre/bin/java"
-
-
-  grq::cat_split_file { "$jdk_rpm_file":
-    install_dir => "/etc/puppetlabs/code/modules/grq/files",
-    owner       =>  $user,
-    group       =>  $group,
+  # Install OpenJDK 8 from system repositories
+  # This works on both x86_64 and aarch64 without separate RPM files
+  package { 'java-1.8.0-openjdk-devel':
+    ensure => present,
+    notify => Exec['ldconfig'],
   }
 
-
-  package { "$jdk_pkg_name":
-    provider => rpm,
-    ensure   => present,
-    source   => $jdk_rpm_path,
-    notify   => Exec['ldconfig'],
-    require     => Grq::Cat_split_file["$jdk_rpm_file"],
-  }
-
-
-  grq::update_alternatives { 'java':
-    path     => $java_bin_path,
-    require  => [
-                 Package[$jdk_pkg_name],
-                 Exec['ldconfig']
-                ],
+  # Set java alternatives to use OpenJDK 8
+  # The path is architecture-independent for OpenJDK
+  # Use auto mode which will automatically select the best alternative
+  exec { 'set-java-alternatives':
+    command => '/usr/sbin/alternatives --auto java',
+    unless  => '/usr/sbin/alternatives --display java | grep -E "(link currently points to|best version is) /usr/lib/jvm"',
+    require => Package['java-1.8.0-openjdk-devel'],
   }
 
 
